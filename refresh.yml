@@ -1,0 +1,31 @@
+name: Daily Numerology Refresh
+
+on:
+  schedule:
+    # Runs at 12:01 AM Eastern Time every day (5:01 AM UTC)
+    - cron: '1 5 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install Pixlet
+        run: |
+          curl -LO https://github.com/tidbyt/pixlet/releases/latest/download/pixlet_linux_amd64.tar.gz
+          tar -xzf pixlet_linux_amd64.tar.gz
+          chmod +x pixlet
+          sudo mv pixlet /usr/local/bin/
+
+      - name: Render numerology app
+        run: pixlet render numerology.star
+
+      - name: Push to Tidbyt
+        run: |
+          pixlet push --installation-id "numerology" \
+            --api-token "${{ secrets.TIDBYT_API_TOKEN }}" \
+            "${{ secrets.TIDBYT_DEVICE_ID }}" \
+            numerology.webp
