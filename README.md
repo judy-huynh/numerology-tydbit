@@ -2,7 +2,7 @@
 
 A custom-built app for [Tidbyt](https://tidbyt.com), a retro-style 64×32 RGB LED pixel display, that shows daily numerology numbers at a glance.
 
-![Numerology Tidbyt Preview](tidbyt-preview.png)
+![Numerology Tidbyt Preview](tidbyt-preview.jpeg)
 
 ---
 
