@@ -2,9 +2,8 @@ name: Daily Numerology Refresh
 
 on:
   schedule:
-    # Runs at 12:01 AM Eastern Time every day (5:01 AM UTC)
     - cron: '1 5 * * *'
-  workflow_dispatch: # Allows manual trigger from GitHub
+  workflow_dispatch:
 
 jobs:
   refresh:
@@ -15,8 +14,8 @@ jobs:
 
       - name: Install Pixlet
         run: |
-          curl -LO https://github.com/tidbyt/pixlet/releases/latest/download/pixlet_linux_amd64.tar.gz
-          tar -xzf pixlet_linux_amd64.tar.gz
+          curl -LO https://github.com/tidbyt/pixlet/releases/download/v0.34.0/pixlet_0.34.0_linux_amd64.tar.gz
+          tar -xzf pixlet_0.34.0_linux_amd64.tar.gz
           chmod +x pixlet
           sudo mv pixlet /usr/local/bin/
 
