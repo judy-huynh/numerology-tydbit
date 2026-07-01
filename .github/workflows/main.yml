@@ -12,12 +12,13 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Keep workflow alive
+        uses: gautamkrishnar/keepalive-workflow@v2
+
       - name: Install Pixlet
         run: |
           DOWNLOAD_URL=$(curl -s https://api.github.com/repos/tidbyt/pixlet/releases/tags/v0.34.0 | grep "browser_download_url.*linux_amd64.tar.gz" | cut -d '"' -f 4)
-          echo "Downloading from: $DOWNLOAD_URL"
           curl -L -o pixlet.tar.gz "$DOWNLOAD_URL"
-          file pixlet.tar.gz
           tar -xzf pixlet.tar.gz
           chmod +x pixlet
           sudo mv pixlet /usr/local/bin/
