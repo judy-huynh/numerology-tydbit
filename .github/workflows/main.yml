@@ -23,9 +23,11 @@ jobs:
           git push
 
       - name: Install Pixlet
+        env:
+          PIXLET_VERSION: 0.34.0
         run: |
-          DOWNLOAD_URL=$(curl -s https://api.github.com/repos/tidbyt/pixlet/releases/tags/v0.34.0 | grep "browser_download_url.*linux_amd64.tar.gz" | cut -d '"' -f 4)
-          curl -L -o pixlet.tar.gz "$DOWNLOAD_URL"
+          curl -fL --retry 3 --retry-all-errors -o pixlet.tar.gz \
+            "https://github.com/tidbyt/pixlet/releases/download/v${PIXLET_VERSION}/pixlet_${PIXLET_VERSION}_linux_amd64.tar.gz"
           tar -xzf pixlet.tar.gz
           chmod +x pixlet
           sudo mv pixlet /usr/local/bin/
