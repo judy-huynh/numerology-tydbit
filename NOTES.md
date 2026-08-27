@@ -18,6 +18,11 @@ runs at `1 5 * * *` (05:01 UTC = 01:01 ET), renders `numerology.star` with pixle
 the webp to the device. The app defaults to `America/New_York`, so a 01:01 ET run gets the right
 date.
 
+The workflow also pushes an empty **keepalive** commit on every run, before rendering. That is
+deliberate: GitHub disables scheduled workflows in repos with no commits for 60 days, and the
+keepalive stops that. Side effect worth knowing, the remote gains a commit a day, so a local clone
+goes stale fast. **Always `git fetch` before working locally**, or a push gets rejected.
+
 The Tidbyt keeps showing the last pushed image forever. Nothing on the device recalculates.
 No push means yesterday's number stays up.
 
@@ -34,10 +39,23 @@ gh auth switch -u rebuildbydesign     # switch back
 
 ## Known issues
 
-**GitHub drops scheduled crons.** 27 Aug 2026 the clock was stuck on yesterday's 8/8. The Action
-had run on time every day from 15 to 26 Aug, then GitHub silently skipped the 05:01 UTC trigger.
-Nothing was broken. Fixed with a manual `workflow_dispatch`. If this keeps happening, add a second
-cron line an hour later so a dropped trigger self-heals.
+**GitHub delays scheduled crons.** 27 Aug 2026 the clock was stuck on yesterday's 8/8 all morning.
+The Action had run on time every day from 15 to 26 Aug, then GitHub sat on the 05:01 UTC trigger
+and did not fire it until **16:10 UTC, over 11 hours late**. Nothing was broken. A manual
+`workflow_dispatch` at 13:27 UTC fixed the display; the delayed run landed on its own afterwards.
+
+Scheduled crons on free runners are best-effort and get queued behind load. Expect this again.
+The durable fix is to **run the schedule several times a day** rather than once. Every run renders
+whatever the current ET date is, so extra runs are self-correcting, idempotent, and cost about 12
+seconds each:
+
+```yaml
+schedule:
+  - cron: '1 5,8,11,14 * * *'   # 01:01, 04:01, 07:01, 10:01 ET
+```
+
+One caveat before doing that: each run also pushes a keepalive commit, so four runs a day means
+four commits a day. Move the keepalive to its own weekly workflow if the history gets noisy.
 
 **Dead launchd job.** `~/Library/LaunchAgents/com.numerology.tidbyt.plist` still exists and still
 fails with exit 127. Its `ProgramArguments` path was never updated when the folder moved, so the
