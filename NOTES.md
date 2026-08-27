@@ -4,6 +4,13 @@ Working notes for this repo and for the household Tidbyt apps we want to build n
 
 ---
 
+## Where this lives
+
+`~/Documents/GitHub/numerology-tydbit`. Moved here from `~/Downloads/2026-JUDY PROJECTS/`
+on 27 Aug 2026. The GitHub Action is unaffected by local moves; it runs off the repo on GitHub.
+
+---
+
 ## How this actually runs
 
 The daily update comes from **GitHub Actions, not from the Mac.** `.github/workflows/main.yml`
@@ -33,10 +40,12 @@ Nothing was broken. Fixed with a manual `workflow_dispatch`. If this keeps happe
 cron line an hour later so a dropped trigger self-heals.
 
 **Dead launchd job.** `~/Library/LaunchAgents/com.numerology.tidbyt.plist` still exists and still
-fails with exit 127. It points at `~/Downloads/Numerology Tidbyt`, a path that no longer exists
-since the folder moved into `2026-JUDY PROJECTS/`. Harmless, but it is not a backup either.
-Either delete it or repoint it at `Numerology Tidbyt/refresh.sh` so the Mac catches days the
-Action drops.
+fails with exit 127. Its `ProgramArguments` path was never updated when the folder moved, so the
+job has not run in months. Harmless, but it is not a backup either. Either delete it or repoint it
+at the current `Numerology Tidbyt/refresh.sh` so the Mac catches days the Action drops.
+
+If it does get repointed, note that `refresh.sh` renders without `-c config-*.json`, so a local run
+pushes the default **ocean** theme, not forest. Fix the render command before enabling it.
 
 **Token in plaintext.** `Numerology Tidbyt/refresh.sh` has the live Tidbyt API token and device ID
 hardcoded. Only `.DS_Store` is gitignored, so that file is one `git add` away from being public.
